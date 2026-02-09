@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartita Romántica</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Arial", sans-serif;
+      background: #fdf1f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* SOBRE CERRADO */
+    .sobre {
+      width: 90%;
+      max-width: 320px;
+      height: 220px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .sobre:before {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
+      border-bottom: 80px solid #fff;
+      top: -80px;
+      left: 0;
+      opacity: 0.9;
+    }
+
+    .sobre p {
+      position: relative;
+      z-index: 2;
+      font-weight: bold;
+      color: #ff5a7a;
+      text-align: center;
+    }
+
+    /* CARTA ABIERTA */
+    .carta {
+      display: none;
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: left;
+      position: relative;
+      z-index: 2;
+    }
+
+    .carta h2 {
+      color: #ff5a7a;
+      text-align: center;
+    }
+
+    .carta p {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .btn-leer {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      padding: 12px;
+      background: #ff5a7a;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* TARJETA ROMÁNTICA */
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      display: none;
+    }
+
+    .title {
+      font-size: 26px;
+      color: #ff5a7a;
+      font-weight: bold;
+    }
+
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-si {
+      background: #ff5a7a;
+      color: white;
+    }
+
+    .btn-no {
+      background: #f5a7b7;
+      color: white;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+      display: none;
+    }
+
+    /* Fondo romántico */
+    .bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      overflow: hidden;
+      display: none;
+    }
+
+    .item {
+      position: absolute;
+      font-size: 26px;
+      animation: fall linear infinite;
+      opacity: 0.8;
+      user-select: none;
+    }
+
+    @keyframes fall {
+      0% {
+        top: -50px;
+        transform: translateX(0);
+      }
+      100% {
+        top: 110vh;
+        transform: translateX(50px);
+      }
+    }
+
+    @media (max-width: 400px) {
+      .title {
+        font-size: 24px;
+      }
+      .btn {
+        font-size: 14px;
+        min-width: 110px;
+      }
+      .message {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SOBRE (cerrado) -->
+  <div class="sobre" id="sobre">
+    <p>Click para abrir la carta 💌</p>
+  </div>
+
+  <!-- CARTA (abierta) -->
+  <div class="carta" id="carta">
+    <h2>Mi amor, perdóname</h2>
+    <p>
+      Esta carta va con mucho amor de su futuro esposo Cesar para la hermosa y bella dama Dayan.
+    </p>
+    <button class="btn-leer" id="btnLeer">Leer la cartita</button>
+  </div>
+
+  <!-- TARJETA ROMÁNTICA -->
+  <div class="bg" id="bg"></div>
+
+  <div class="card" id="tarjeta">
+    <div class="title">¿Me perdonas?</div>
+
+    <div class="buttons">
+      <button class="btn btn-si" id="btnSi">Sí</button>
+      <button class="btn btn-no" id="btnNo">No</button>
+    </div>
+
+    <div class="message" id="mensaje"></div>
+  </div>
+
+  <script>
+    const sobre = document.getElementById("sobre");
+    const carta = document.getElementById("carta");
+    const btnLeer = document.getElementById("btnLeer");
+    const tarjeta = document.getElementById("tarjeta");
+    const bg = document.getElementById("bg");
+
+    const btnSi = document.getElementById("btnSi");
+    const btnNo = document.getElementById("btnNo");
+    const msg = document.getElementById("mensaje");
+
+    let noClicks = 0;
+    let bloqueado = false;
+
+    // ABRIR CARTA AL CLICK
+    sobre.addEventListener("click", () => {
+      sobre.style.display = "none";
+      carta.style.display = "block";
+    });
+
+    // IR A LA TARJETA
+    btnLeer.addEventListener("click", () => {
+      carta.style.display = "none";
+      tarjeta.style.display = "block";
+      bg.style.display = "block";
+    });
+
+    // MENSAJE DE "SI"
+    btnSi.addEventListener("click", () => {
+      if (bloqueado) return;
+
+      msg.style.display = "block";
+      msg.innerHTML = "gracias por perdonarme mi amor , t amo mucho mientras momias t hice esto como perdon espero t guste , t extraño mucho mi amor , pero perdoneme esto es para que veas que si hago las cosas por usted que vea cuanto la amor mi bb y futura esposa jejej . ❤️";
+
+      bloqueado = true;
+      btnSi.disabled = true;
+      btnNo.disabled = true;
+
+      btnSi.style.opacity = 0.5;
+      btnNo.style.opacity = 0.5;
+      btnSi.style.cursor = "not-allowed";
+      btnNo.style.cursor = "not-allowed";
+    });
+
+    // MENSAJE DE "NO"
+    btnNo.addEventListener("click", () => {
+      if (bloqueado) return;
+
+      noClicks++;
+      msg.style.display = "block";
+
+      if (noClicks === 1) {
+        msg.innerHTML = "¿Por qué no? 😭";
+      } else if (noClicks === 2) {
+        msg.innerHTML = "Ya pues mi amor 😔";
+      } else if (noClicks === 3) {
+        msg.innerHTML = "Por favorrrr 😭";
+      } else if (noClicks === 4) {
+        msg.innerHTML = "Te lo ruego amor, perdóname :(";
+      } else {
+        msg.innerHTML = "😭";
+      }
+    });
+
+    // Fondo con corazones y rosas cayendo
+    for (let i = 0; i < 120; i++) {
+      const el = document.createElement("div");
+      el.classList.add("item");
+      el.innerText = i % 2 === 0 ? "❤️" : "🌹";
+
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.animationDelay = Math.random() * 5 + "s";
+      el.style.opacity = Math.random() * 0.8 + 0.2;
+      el.style.fontSize = (Math.random() * 25 + 15) + "px";
+      el.style.animationDuration = (Math.random() * 6 + 4) + "s";
+
+      bg.appendChild(el);
+    }
+  </script>
+
+</body>
+</html>
